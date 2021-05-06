@@ -1,0 +1,476 @@
+\graphicspath{{./figures/capitolo1/}}
+\lstset{inputpath = ./programs/capitolo1}
+\pgfplotstableset{search path = ./tables/capitolo1}
+
+\chapter{Introduzione}
+
+Questo elaborato ha lo scopo di ripercorrere
+gli argomenti più importanti del corso
+\emph{Modelli numerici per la simulazione}, che ho frequentato
+nell'anno accademico 2018/2019.
+Secondo quanto visto a lezione, ho prestato 
+particolare attenzione ai seguenti aspetti:
+la formulazione e l'analisi di sistemi dinamici semplici ma significativi,
+spesso tratti da modelli scientifici,
+la loro discretizzazione tramite opportuni metodi numerici,
+l'implementazione effettiva di questi metodi in ambiente MATLAB
+e infine l'analisi critica dei dati numerici ottenuti dalle simulazioni
+alla luce dei risultati teorici noti.
+Come premessa a tutto ciò, mi è sembrato opportuno iniziare
+l'elaborato con una riflessione sul concetto di errore nell'ambito
+del calcolo scientifico.
+%Questo elaborato ripercorre gli argomenti più importanti
+%del corso \emph{Modelli numerici per la simulazione}, con particolare
+%attenzione all'analisi di alcuni sistemi dinamici significativi,
+%spesso tratti da modelli scientifici,
+%a cui seguono una discretizzazione tramite opportuni metodi numerici,
+%un'implementazione effettiva di questi metodi in ambiente MATLAB
+%e un'analisi critica dei dati numerici ottenuti dalle simulazioni
+%alla luce della teoria.
+%Come premessa a tutto ciò, mi è sembrato opportuno iniziare
+%l'elaborato con una riflessione sul concetto di errore nell'ambito
+%del calcolo scientifico.
+
+Prima, però, qualche precisazione di carattere tecnico.
+Nonostante io abbia lavorato individualmente a questo elaborato,
+ho preferito adottare la prima persona plurale in tutto il testo
+per una questione di abitudine.
+Sempre per la stessa ragione, ho preferito scrivere in inglese
+i nomi delle funzioni e delle variabili nel codice MATLAB,
+lasciando però i commenti in italiano.
+La suddivisione dei capitoli segue fedelmente quella
+del libro di testo di riferimento per il corso.
+
+Il tipo di dato \code{table} ricorre spesso nel codice MATLAB,
+perché l'ho usato per generare le tabelle e i grafici in modo automatico
+all'interno del sorgente LaTeX (funzione offerta dal pacchetto \code{pgfplots}).
+La colorazione automatica della sintassi è dovuta al
+pacchetto \code{matlab-prettifier}, che estende il pacchetto \code{listings}.
+Il codice che ho scritto è stato testato solo sulla release 2020b
+di MATLAB, ma credo di non aver utilizzato alcuna funzionalità
+particolarmente recente.
+
+\section{Analisi dell'errore} \label{sec:errore}
+
+L'affidabilità delle previsioni fornite dal calcolo scientifico
+dipende in modo cruciale dalla capacità di comprendere,
+stimare e mantenere sotto controllo gli errori durante l'intero processo di calcolo.
+Senza pretese di completezza o generalità,
+in questo capitolo andremo a elencare le principali fonti di errore.
+Nessuna fonte è a priori trascurabile, perché
+ciascuna di esse, nelle giuste circostanze, può risultare decisiva
+nel proprio contributo all'errore complessivo.
+
+A monte, è inevitabile che venga commesso un \emph{errore di modellizzazione}:
+ogni teoria scientifica fa uso di modelli matematici, ma
+un buon modello non è tanto un modello \emph{perfetto}%
+\footnote{Infatti un tale modello, ammesso che esista,
+non sarebbe meno complesso della realtà stessa.},
+quanto un modello che, nella sua semplicità, è in grado di fornire descrizioni o
+previsioni \emph{utili}, cioè affette da errori sufficientemente piccoli
+per il contesto in cui il modello trova applicazione.
+In altre parole, un buon modello è in grado di catturare
+gli aspetti strettamente essenziali di un fenomeno
+(in termini di grandezze, dinamiche, ecc),
+andando invece a escludere tutto il resto.
+%in modo consapevole quelli superflui
+
+Una seconda fonte di errore è poi l'incertezza
+a cui sono soggetti tutti i dati in ingresso al modello;
+si parla in questo caso di \emph{errore sui dati}.
+Non è possibile, infatti, misurare alcuna grandezza
+naturale o sociale con precisione assoluta:
+ogni quantità, sia essa determinata tramite inferenza statistica,
+misurata sperimentalmente o fornita a sua volta da altri modelli,
+è inevitabilmente soggetta a errore, e andrebbe pertanto rappresentata mediante una
+distribuzione di probabilità, piuttosto che un singolo valore puntuale.
+Questo approccio, ammesso che si sappia dire qualcosa su tali distribuzioni,
+complica però di parecchio il modello; spesso ci si accontenta di tenere
+traccia di intervalli di confidenza.
+%(anche in senso generalizzato: ad esempio,
+%l'incertezza di $\pm 0,05$mm associata alla misura con un calibro ventesimale, oppure
+%la tolleranza del~5\% dichiarata da un costruttore di resistenze elettriche).
+%Solitamente non spetta all'analista numerico occuparsi di questi tipi di errore.
+
+Una terza fonte d'errore deriva dalle difficoltà computazionali
+che si riscontrano durante l'applicazione del modello.
+Quasi sempre, infatti, la soluzione del problema matematico
+previsto dal modello non può essere calcolata in modo esatto
+da un algoritmo che opera tramite un numero finito di operazioni elementari
+sui dati iniziali; pertanto bisogna accontentarsi di
+%un algoritmo che ne calcoli
+un'approssimazione.%
+\footnote{È un esempio celebre la soluzione per radicali
+delle equazioni algebriche di grado 5 o superiore.}
+In questo caso si parla di \emph{errore associato
+al metodo numerico}. Questo è il tipo di errore che si manifesta,
+ad esempio, ogni volta che un procedimento iterativo viene
+arrestato prima di essere arrivato a convergenza, oppure
+ogni volta che una serie numerica viene troncata, o magari quando
+un integrale viene approssimato tramite una formula di quadratura.
+Più nello specifico, in questo elaborato ci ritroveremo spesso ad analizzare
+l'errore che si commette quando un ente matematico la cui natura è continua
+%dalla natura continua
+(un sistema dinamico, un oggetto geometrico, un operatore) viene sostituito
+da un analogo ente discreto, sempre per esigenze computazionali: questo errore
+è detto \emph{errore di discretizzazione}.
+
+Un'ulteriore fonte di errore consiste nell'utilizzo di operazioni
+aritmetiche inesatte all'interno di un algoritmo, al fine di velocizzarne
+l'esecuzione e ridurne l'occupazione di memoria.
+L'aritmetica esatta, laddove il suo uso sia possibile,
+è infatti troppo onerosa da un punto di vista computazionale,
+e per questo motivo viene utilizzata molto raramente nell'ambito del calcolo scientifico.
+%(un uso possibile è la stima a posteriori dell'errore associato
+%al metodo numerico).
+Inoltre, sarebbe superfluo eseguire in modo esatto delle operazioni
+aritmetiche su quantità comunque affette da errore,
+secondo quanto detto nei punti precedenti. % (vedi punti precedenti).
+Ad ogni modo, l'utilizzo dell'aritmetica inesatta non è privo di insidie:
+bisogna assicurarsi che l'algoritmo scelto
+non porti a un accumulo incontrollato dei piccoli%
+\footnote{Anzi, a volte non proprio piccoli, come vedremo in seguito
+parlando degli errori di cancellazione numerica.}
+errori commessi da ogni operazione, detti \emph{errori dovuti all'aritmetica finita},
+con conseguenze potenzialmente catastrofiche sull'accuratezza del risultato finale.
+Lo studio di questo aspetto di un algoritmo è detto \emph{analisi di stabilità}:
+formalmente un algoritmo di dice \emph{instabile} se, eseguito in aritmetica
+inesatta, genera un errore sui dati in uscita di alcuni%
+\footnote{Quanti, nella pratica? Non c'è una risposta univoca,
+ma già quattro non ci sembrano trascurabili.}
+ordini di grandezza maggiore dell'errore sui dati in ingresso al modello,
+altrimenti si dice \emph{stabile}.
+Non sempre è possibile trovare un'alternativa stabile a un algoritmo instabile:
+talvolta è la natura stessa del problema matematico da risolvere che comporta
+un'amplificazione massiccia degli errori sui dati in ingresso.
+In questi casi, anche in assenza di errori associati al metodo numerico
+o dovuti all'aritmetica finita, non si riuscirebbe comunque 
+a determinare con precisione il valore in uscita dal modello;
+si parla allora di \emph{problemi mal condizionati}.
+Il fattore di proporzionalità tra gli errori sui dati in ingresso e gli
+errori sui dati in uscita è detto \emph{numero di condizionamento del problema}.
+Dunque, il numero di condizionamento di un problema pone un limite intrinseco
+alla stabilità di qualunque algoritmo impiegato per risolvere il modello.
+Un esempio estremo di problema mal condizionato è la simulazione
+di un sistema dinamico caotico, come vedremo più avanti nel Capitolo 7.
+Tornando all'aritmetica inesatta,
+%
+%questo tipo di errore è, in un certo senso, quello fondamentale, perché
+%fornisce una limitazione inferiore a tutti gli altri tipi di errore.
+%Inoltre stabilisce implicitamente se gli altri errori vadano calcolati
+%in senso assoluto (nel caso dei numeri a virgola fissa) o relativo (nel caso
+%dei numeri a virgola mobile).
+%
+tutte le simulazioni numeriche presenti in questo elaborato utilizzano
+i numeri a virgola mobile con precisione doppia definiti dallo standard
+IEEE 754 del 2008; le caratteristiche e le peculiarità di questo tipo
+di aritmetica inesatta verranno descritte brevemente nel prossimo paragrafo.
+
+A chiusura di questo paragrafo, invece, ricordiamo che esiste un'ultima
+tipologia di errore, che è la più insidiosa e imprevedibile: l'\emph{errore umano}.
+Nonostante i nostri sforzi, siamo certi che questo stesso elaborato non ne sia esente.
+
+\section{Standard IEEE 754 per il calcolo in virgola mobile} \label{sec:ieee754}
+
+%Per quanto possa essere interessante chiedersi quali numeri reali
+%siano rappresentabili da un calcolatore (magari, idealizzato),
+
+Capire quale sia il vero ostacolo che impedisce a un calcolatore (seppur idealizzato)
+di rappresentare numeri reali arbitrari è senz'altro un problema affascinante.
+%di rappresentare un numero reale qualunque è senz'altro un problema affascinante.
+Tuttavia, nell'ambito dell'analisi numerica, ci sono ben altri motivi
+(sostanzialmente, mancanza di tempo e memoria) per cui ci si accontenta,
+nella pratica, di lavorare con un sottoinsieme finito dei numeri razionali,
+distribuito in modo approssimativamente uniforme in scala logaritmica,
+a cui ci riferiremo d'ora in poi come \emph{numeri di macchina}.
+Nell'ambito del calcolo scientifico, i numeri di macchina più diffusi
+sono i numeri a virgola mobile con precisione doppia definiti dallo standard IEEE 754.
+Questi numeri, a parte qualche eccezione (lo zero, ad esempio),
+sono della forma $\pm m 2^e$, con
+\[
+m \in \Q,
+\quad m = \frac{n}{2^{52}},
+\quad 2^{52} \leq n < 2^{53},
+\quad e \in \Z,
+\quad -1022 \leq e \leq 1023.
+\]
+La codifica di questi numeri di macchina richiede 64 bit, dei quali
+il primo è dedicato al segno, i seguenti 11 all'esponente $e$
+e gli ultimi 52 ai bit \emph{espliciti} della mantissa $m$.
+La mantissa è composta anche da un bit \emph{implicito}, il più significativo,
+che però è sempre 1 e pertanto non viene memorizzato.
+La codifica dello zero (anzi, degli zeri, in base al segno),
+degli infiniti, dei numeri denormalizzati e dei valori NaN (Not-a-Number)
+aggiunge una certa complessità allo schema di codifica,
+che però non è rilevante nel contesto di questo elaborato.
+
+Piuttosto, è importante analizzare il massimo errore relativo che
+si può commettere quando un numero reale $x$ viene
+approssimato con il numero di macchina $r(x)$ più vicino
+(in caso di ex aequo, viene scelto $n$ pari per convenzione).
+Così definita, la \emph{funzione di arrotondamento} $r(x)$
+soddisfa la stima
+\begin{equation} \label{eq:stima}
+\frac{\abs{x-r(x)}}{\abs{x}} \leq 2^{-53}
+\quad \text{per ogni $x \in \pm [2^{-1022}, 2^{1023}]$}.
+\end{equation}
+
+Per quanto riguarda la definizione delle operazioni aritmetiche elementari
+tra numeri di macchina (quelle, cioè, inesatte, d'ora in poi indicate
+con l'aggiunta di un cerchietto), lo standard IEEE 754 richiede
+che siano soddisfatte le seguenti identità (si parla di \emph{correct rounding}):
+\begin{equation} \label{eq:identità}
+a \oplus b = r(a+b),
+\quad a \odot b = r(ab),
+\quad a \ominus b = r(a-b),
+\quad a \oslash b = r(a/b).
+\end{equation}
+
+La stima \eqref{eq:stima} e le identità \eqref{eq:identità} sono molto importanti,
+perché insieme permettono di analizzare la stabilità di un algoritmo
+mediante una tecnica \emph{perturbativa}. L'idea è quella di
+equiparare l'aritmetica inesatta su numeri di macchina
+all'aritmetica esatta su numeri reali affetti da un errore relativo
+dell'ordine di $\varepsilon =  2^{-53} \approx 1.1 \cdot 10^{-16}$,
+costante nota come \emph{epsilon di macchina}.
+In alcuni contesti (ad esempio, in MATLAB), l'epsilon di macchina viene definito
+in altro modo, cioè come la distanza che separa il numero 1 dal numero di
+macchina successivo. In tal caso, $\varepsilon = 2^{-52}$,
+ma l'ordine di grandezza rimane comunque $10^{-16}$.
+
+A conclusione di questo paragrafo, passiamo in rassegna alcuni
+problemi legati all'uso dei numeri di macchina di cui abbiamo
+dovuto tenere di conto durante la scrittura dei programmi MATLAB
+presenti nell'elaborato:
+%problemi che si possono riscontrare nell'utilizzo di questi numeri di macchina:
+\begin{itemize}
+\item Le operazioni di somma e prodotto tra numeri di macchina sono commutative,
+	ma non associative. Inoltre tra loro non vale la proprietà distributiva.
+	Dunque la scelta di come associare e distribuire somme e prodotti
+	in un algoritmo può avere delle conseguenze importanti
+	durante la sua esecuzione in aritmetica inesatta; in alcuni casi
+	fa addirittura la differenza tra un algoritmo stabile e uno instabile.
+\item Quantità uguali in aritmetica esatta possono risultare diverse
+	in aritmetica inesatta, e viceversa:
+	\[
+	r(1/3) \odot 3 \neq 1
+	\qquad 1 \oplus 2^{-53} = 1
+	\]
+	Per questo motivo in un algoritmo ha solitamente poco senso
+	controllare se due numeri di macchina siano uguali, perché l'esito
+	può essere imprevedibile. Piuttosto, si preferisce
+	rilassare la nozione di uguaglianza limitandosi a controllare se
+	la distanza relativa tra i due numeri di macchina sia inferiore a
+	un certo valore di soglia $s$, la cui scelta è però ovviamente
+	delicata: bisogna trovare il giusto compromesso tra falsi positivi
+	($s$ grande) e falsi negativi ($s$ piccola). Osserviamo inoltre che
+	questa nozione rilassata di uguaglianza non è più transitiva.
+\item L'operazione di somma $a+b$ tra numeri reali è mal condizionata
+	per alcuni valori degli addendi $a$ e $b$. Si può dimostrare,
+	infatti, che il numero di condizionamento relativo $k$ ottenuto
+	fissando la norma infinito sul dominio $\R^2$ della funzione somma è
+	\[
+	\frac{2 \max\bigl\{|a|,|b|\bigr\}}{\abs{a+b}}.
+	\]
+	Purtroppo, non è raro che $\abs{a+b}$ sia di molti
+	ordini di grandezza minore di $\max\bigl\{|a|,|b|\bigr\}$.
+	Questo caso si verifica, per esempio,
+	ogni volta che si approssima la derivata di una funzione
+	in un punto mediante rapporto incrementale.
+	Se $k$ è sufficientemente grande, allora la somma tra numeri di macchina
+	è instabile e il fenomeno di amplificazione dell'errore relativo
+	in questo caso prende il nome di \emph{cancellazione numerica}.
+	Il prodotto tra numeri di macchina è invece sempre stabile,
+	perché in questo caso $k \equiv 1$.
+\item Dato che i numeri di macchina hanno 53 bit di mantissa
+	(di cui uno implicito), tutti gli interi da $-2^{53}$ a $2^{53}$
+	sono rappresentabili in modo esatto.
+	Il numero $2^{53}+1$, invece, già non lo è più.
+\end{itemize}
+
+\section{Numeri di Stirling di seconda specie} \label{sec:stirling}
+
+In numeri di Stirling sono quantità combinatorie importanti,
+% spesso legati a problemi di enumerazione di partizioni o permutazioni.
+legate all'enumerazione di particolari partizioni e permutazioni.
+In questo paragrafo andremo a definire i numeri di Stirling di seconda specie
+e a calcolarli in modo efficiente, mediante una formula ricorsiva.
+Inoltre, cercheremo di mettere in luce la loro rilevanza nel contesto
+del calcolo alle differenze finite, tema centrale di tutto l'elaborato
+e in particolare del prossimo capitolo.
+Innanzitutto, è utile la seguente definizione:
+%Per farlo, occorre una definizione preliminare:
+
+%	In un corso di combinatoria, i numeri di Stirling vengono solitamente
+%	introdotti nel contesto della \emph{twelvefold way}, ossia un utile esercizio
+%	di calcolo della cardinalità di insiemi di funzioni ideato da Giancarlo Rota,
+%	padre della combinatoria moderna.
+%	
+%	Tuttavia, nell'ambito dell'analisi numerica, conviene interpretare questi numeri
+%	in altro modo, ossia come coefficienti di cambio di base in $\Pi_k$,
+%	spazio vettoriale dei polinomi reali di grado al più $k$.
+
+\begin{defi}[Base delle pseudopotenze]
+La base di $\R[x]$ formata dai polinomi
+\begin{equation} \label{eq:pseudopotenze}
+x^{(n)} \deq \prod_{i = 0}^{n-1} (x-i)
+\quad \text{al variare di $n \in \N$}
+\end{equation}
+è detta \emph{base delle pseudopotenze} di $\R[x]$,
+o anche \emph{base dei fattoriali decrescenti}.%
+\footnote{In tutto l'elaborato, l'insieme $\N$ comprende anche lo zero.}
+\end{defi}
+
+Osserviamo che la base delle pseudopotenze, proprio come l'usuale
+base dei monomi $x^n$, è composta da polinomi monici e di grado
+strettamente crescente.
+Sia $\Delta$ l'operatore di differenza in avanti unitaria, ossia
+tale che $(\Delta f)(x) = f(x+1)-f(x)$.
+Nel contesto del calcolo alle differenze finite,
+l'operatore di differenza $\Delta$ svolge lo stesso
+ruolo dell'operatore di derivata $\cramped{\frac{d}{dx}}$
+nel contesto del calcolo differenziale.
+Analogamente, la base delle pseudopotenze svolge lo stesso ruolo
+della base dei monomi, come illustrato dal seguente teorema:
+
+\begin{teor}
+La matrice associata all'operatore lineare $\cramped{\frac{d}{dx}}$
+una volta fissata in $\R[x]$ la base dei monomi è uguale alla matrice
+associata a $\Delta$ una volta fissata in $\R[x]$ la base delle pseudopotenze.
+In entrambi i casi, infatti, si ottiene la matrice $D$ tale che
+$D_{ij} = i \:\! \delta_{i(j-1)}$.
+\end{teor}
+
+\begin{proof}
+Segue dalla linearità di $\Delta$ e dall'identità $\Delta x^{(n)} = n x^{(n-1)}$.
+\end{proof}
+
+\begin{defi}[Numeri di Stirling]
+I coefficienti $s_i^n$ della matrice
+di cambio di base in $\R[x]$ dalla base
+dei monomi alla base delle pseudopotenze sono detti
+\emph{numeri di Stirling di prima specie (con segno)}.
+I coefficienti $S_i^n$ della matrice associata al cambio di base inverso
+sono detti \emph{numeri di Stirling di seconda specie}.%
+\footnote{Osserviamo che, in via eccezionale,
+gli indici di riga $n$ e di colonna $i$
+delle matrici $s$ e $S$ partono da $0$ anziché $1$.}
+Più formalmente, valgono per definizione le identità
+\begin{equation} \label{eq:definizione-stirling}
+x^{(n)} = \sum_{i=0}^{n} s_i^n x^i,
+\quad
+x^n = \sum_{i=0}^{n} S_i^n x^{(i)}
+\quad
+\text{per ogni $n \in \N$.}
+\end{equation}
+\end{defi}
+
+La definizione appena data è ben posta, perché $\deg(x^n)=\deg(x^{(n)})$
+e quindi non c'è bisogno di estendere le sommatorie \eqref{eq:definizione-stirling}
+oltre l'indice $n$-esimo.
+Le matrici $s$ e $S$ hanno dunque struttura triangolare inferiore,
+perché l'unico valore che ha senso attribuire ai numeri di Stirling
+quando l'indice $i$ supera $n$ è 0.
+
+I numeri di Stirling di prima specie sono piuttosto semplici da calcolare:
+basta espandere il prodotto nell'equazione \eqref{eq:pseudopotenze}.
+In alternativa, cambiando la forma ma non la sostanza, si può partire
+dall'identità $x^{(n)} = (x-n+1) x^{(n-1)}$ per dimostrare la formula ricorsiva
+\begin{equation} \label{eq:ricorrenza-prima-specie}
+s_i^n = s_{i-1}^{n-1} - (n-1)s_i^{n-1}.
+\end{equation}
+
+Per quanto riguarda invece il calcolo dei numeri di Stirling di seconda specie,
+la definizione che abbiamo dato sembra suggerire la necessità di
+invertire una sottomatrice finita di $s$,
+il che avrebbe costo computazionale cubico.
+In realtà, anche per i numeri di Stirling di seconda specie esiste
+una formula ricorsiva analoga alla \eqref{eq:ricorrenza-prima-specie},
+la quale permette di mantenere un costo quadratico.
+\begin{teor}
+I numeri di Stirling di seconda specie soddisfano la relazione di ricorrenza
+\begin{equation} \label{eq:ricorrenza-seconda-specie}
+S_i^n = S_{i-1}^{n-1} + i S_i^{n-1}
+\end{equation}
+con valori iniziali $S_0^0 = 1,
+\; S_i^0 = 0 \text{ per ogni $i \geq 1$},
+\; S_0^n = 0 \text{ per ogni $n \geq 1$.}$
+\end{teor}
+
+\begin{proof}
+L'affermazione riguardante i valori iniziali segue dalla
+struttura triangolare inferiore di $S$ e da considerazioni sui termini
+noti dei polinomi nella seconda identità~\eqref{eq:definizione-stirling}.
+Per quanto riguarda la relazione di ricorrenza,
+vale la seguente catena di uguaglianze:
+\begin{align*}
+\sum_{i=0}^{n} S_i^n x^{(i)}
+&= x^n
+ = x x^{n-1}
+ = x \sum_{i=0}^{n-1} S_i^{n-1} x^{(i)} \\
+&= \sum_{i=0}^{n-1} S_i^{n-1} (x-i) x^{(i)}
+	+ \sum_{i=0}^{n-1} S_i^{n-1} i x^{(i)}
+ = \sum_{i=0}^{n-1} S_i^{n-1} x^{(i+1)}
+	+ \sum_{i=0}^{n-1} i S_i^{n-1} x^{(i)} \\
+&= \sum_{i=1}^{n} S_{i-1}^{n-1} x^{(i)}
+	+ \sum_{i=0}^{n-1} i S_i^{n-1} x^{(i)}
+ = \sum_{i=0}^{n} S_{i-1}^{n-1} x^{(i)}
+	+ \sum_{i=0}^{n} i S_i^{n-1} x^{(i)}.
+\end{align*}
+Per concludere basta confrontare i coefficienti delle pseudopotenze
+del primo e dell'ultimo termine della catena (stiamo implicitamente
+usando l'indipendenza lineare delle pseudopotenze).
+\end{proof}
+
+Come preannunciato, grazie a questa formula ricorsiva è possibile
+calcolare con $\Theta(n^2)$ operazioni elementari complessive%
+\footnote{Notazione di Bachmann-Landau, con l'usuale significato
+per i simboli $O$, $\Theta$ e $\Omega$.}
+i numeri di Stirling di seconda specie fino a $S_n^n$.
+Un possibile modo per farlo è illustrato nel Programma \ref{prog:stirling}.
+A conclusione di questo paragrafo, commentiamo brevemente tale programma:
+
+\begin{itemize}
+\item Dato che gli indici in MATLAB partono da 1 anziché 0,
+	per evitare confusione non andiamo a calcolare la riga
+	e la colonna di $S$ corrispondenti a $n = 0$ e $i = 0$, rispettivamente.
+	Scegliamo come nuovi valori iniziali $S_n^1 = 1$ per ogni $n \geq 1$.
+\item In MATLAB, il tipo di dato numerico predefinito è quello a virgola
+	mobile con precisione doppia IEEE 754, che come abbiamo visto
+	non è in grado di gestire l'aritmetica tra interi in modo esatto
+	al di fuori dell'intervallo $[-2^{53},2^{53}]$.
+	La condizione d'uscita dal ciclo while serve pertanto a garantire
+	che tutti i numeri di Stirling calcolati siano esatti.
+	Quando ciò non è più possibile, l'algoritmo termina.
+\item Quando allochiamo dello spazio in memoria per la matrice $S$
+	con il comando \code{zeros} non c'è bisogno di superare le 55 righe.
+	Infatti, applicando la \eqref{eq:ricorrenza-seconda-specie}
+	alla seconda colonna di $S$, si ha
+	\[
+	S_2^n = S_1^{n-1} + 2S_2^{n-1} = 1 + 2S_2^{n-1}
+	\]
+	per cui si può dimostrare per induzione che $S_2^n = 2^{n-1}-1$.
+	Se $n=55$, allora $2^{n-1} - 1 > 2^{53}$ e sappiamo con certezza
+	che l'algoritmo non potrà procedere oltre.
+\item Dato che $S$ è triangolare inferiore, possiamo evitare di calcolare
+	tutti i valori al di sopra della diagonale. Inoltre, dato che riempiamo
+	la matrice $S$ in ordine di riga crescente, evitiamo chiamate ricorsive
+	su numeri di Stirling ancora da calcolare (anzi, evitiamo del tutto
+	le chiamate ricorsive perché l'algoritmo è scritto in forma puramente
+	iterativa). Questa idea, opportunamente generalizzata, è alla base
+	della \emph{programmazione dinamica}.
+\end{itemize}
+
+%\afterpage{
+\lstinputlisting[float=tp,
+caption={Calcolo dei numeri di Stirling di seconda specie},
+label=prog:stirling]{stirling.m}
+%}
+
+
+
+
+
+
+
+

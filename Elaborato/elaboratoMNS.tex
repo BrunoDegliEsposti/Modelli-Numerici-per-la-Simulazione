@@ -1,0 +1,122 @@
+\documentclass[a4paper,11pt]{report}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+	\geometry{a4paper,top=2cm,bottom=2cm,left=2.5cm,right=2.5cm,heightrounded}
+\usepackage{amsmath, amsthm, amssymb, mathtools}
+\usepackage{siunitx}
+\usepackage{resizegather}
+	\addtolength{\jot}{4pt}
+\usepackage{pgfplots, pgfplotstable, booktabs, array}
+	\pgfplotsset{compat=1.16}
+	\pgfplotstableset{
+		col sep = comma,
+		every head row/.append style={before row=\toprule, after row=\midrule},
+		every last row/.append style={after row=\bottomrule},
+		every column/.append style={sci, sci zerofill, sci e, sci precision = 2},
+		string replace={NaN}{},
+		empty cells with={-}
+	}
+\usepackage{listingsutf8}
+	\lstset{inputencoding=utf8/latin1}
+	\lstset{numbers=left, frame=tb, rulecolor=\color{black}}
+	\lstset{framexleftmargin=3em, xleftmargin=3em}
+	\lstset{tabsize=4}
+	\lstset{captionpos=b, abovecaptionskip=1ex}
+	\renewcommand{\lstlistingname}{Programma}
+\usepackage{matlab-prettifier}
+	\lstset{style=Matlab-editor}
+\usepackage[scaled]{beramono}
+	\lstset{basicstyle=\mlttfamily \small}
+	\lstset{numberstyle=\mlttfamily \small \color{gray}}
+\usepackage{caption, subcaption}
+	\captionsetup{tableposition=top,figureposition=bottom}
+	\captionsetup{justification=centering,font=small,labelfont=bf}
+\usepackage{hyperref}
+	\hypersetup{hidelinks}
+\usepackage{afterpage}
+\usepackage{microtype}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\lambdamax}{\lambda_{\text{max}}}
+\newcommand{\lambdamin}{\lambda_{\text{min}}}
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\code}[1]{\begin{small}\texttt{#1}\end{small}}
+\newcommand{\deq}{\vcentcolon=}
+\newcommand{\eqd}{=\vcentcolon}
+\newcommand{\dx}{\, dx}
+\newcommand{\dy}{\, dy}
+\newcommand{\dt}{\, dt}
+\newcommand{\ds}{\, ds}
+\newcommand{\dc}{\, dc}
+\newcommand{\grad}{\nabla}
+\renewcommand{\Re}{\operatorname{Re}}
+\renewcommand{\Im}{\operatorname{Im}}
+\DeclareMathOperator{\Ker}{Ker}
+\DeclareMathOperator{\Rank}{Rank}
+\DeclareMathOperator{\spn}{span} % \span è già utilizzato da latex
+\DeclareMathOperator{\tr}{tr}
+
+\theoremstyle{definition}
+\newtheorem*{defi}{Definizione}
+\newtheorem{esem}{Esempio}[chapter]
+\newtheorem*{prob}{Problema}
+
+\theoremstyle{plain}
+\newtheorem{teor}{Teorema}[chapter]
+\newtheorem{lemm}[teor]{Lemma}
+\newtheorem{prop}[teor]{Proposizione}
+\newtheorem{coro}[teor]{Corollario}
+\newtheorem{dimo}{Dimostrazione}
+
+\theoremstyle{remark}
+\newtheorem*{osse}{Osservazione}
+
+\title{\Huge{\bf{
+	Elaborato per il corso \\
+	\emph{Modelli Numerici per la Simulazione}
+}}}
+\author{\huge{Bruno Degli Esposti}}
+\date{\Large{Primavera 2021}}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\pagestyle{headings}
+
+\input{capitolo1.tex}
+
+\input{capitolo2.tex}
+
+\input{capitolo3.tex}
+
+\input{capitolo4.tex}
+
+\input{capitolo5.tex}
+
+\input{capitolo6.tex}
+
+\input{capitolo7.tex}
+
+\input{capitolo8.tex}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+

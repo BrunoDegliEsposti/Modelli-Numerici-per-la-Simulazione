@@ -1,0 +1,382 @@
+\graphicspath{{./figures/capitolo4/}}
+\lstset{inputpath = ./programs/capitolo4}
+\pgfplotstableset{search path = ./tables/capitolo4}
+
+\chapter{Funzioni di matrici}
+In questo capitolo andremo a definire il concetto di
+\emph{funzione di matrice}, cioè daremo senso alla scrittura
+$f(A)$ con $A$ matrice quadrata su $\C$ di dimensione~$\bar{m}\times\bar{m}$
+e $f \colon \C \to \C$ funzione di variabile complessa
+di regolarità opportuna.
+Vedremo inoltre come $f(A)$ possa essere calcolata in modo
+stabile ed efficiente per un'importante classe di matrici:
+le matrici \emph{normali}.
+
+La definizione di funzioni di matrice non è una semplice curiosità
+matematica: le applicazioni di questa teoria sono veramente numerose.
+Nel corso di questo elaborato utilizzeremo le funzioni di matrice principalmente
+per scrivere in forma chiusa la soluzione di sistemi dinamici lineari
+(sia continui che discreti) e per analizzarne le proprietà di stabilità.
+
+%Nel corso dei nostri studi abbiamo avuto modo di incontrare
+%anche altre applicazioni; ne riportiamo qui alcune:
+%\begin{itemize}
+%\item Il gruppo lineare generale $GL_n(\C)$ è connesso per archi.
+%	L'idea ingenua di utilizzare delle combinazioni convesse per costruire
+%	degli archi non funziona, perché lo spazio non è convesso.
+%	Tuttavia, l'idea può essere corretta considerando combinazioni
+%	convesse degli esponenti: due matrici $A,B$ sono connesse dall'arco
+%	$\gamma(t) = \exp((1-t)\log(A)+t\log(B))$.
+%\item In algebra lineare, l'esistenza e l'unicità di radici quadrate
+%\item L'\emph{entropia di Von Neumann} di un sistema quantistico descritto da
+%	una matrice di densità $\rho$ è definita come $-\tr(\rho\log(\rho))$.
+%	È notevole (e d'altronde inevitabile) la somiglianza con le espressioni
+%	classiche dell'entropia, cioè quelle dovute a Gibbs e a Shannon.
+%\item Nel contesto della soluzione numerica 
+%\end{itemize}
+
+%Questa è un'astrazione notevole, perché una matrice è già
+%di per sé una trasformazione (di spazi vettoriali), quindi una funzione
+%di matrice è in un certo senso una trasformazione di trasformazioni.
+
+Cominciamo dalla definizione di $f(A)$ nel caso in cui $f$
+sia un polinomio:
+
+\begin{defi}[Polinomio di matrice]
+Sia $A$ una matrice quadrata su $\C$ di dimensione~$\bar{m}\times\bar{m}$
+e sia $p(z)$ il polinomio $a_k z^k + \dots + a_1 z + a_0$.
+La matrice $p(A)$ è definita tramite la sostituzione formale
+\[
+p(A) = \sum_{i=0}^k a_i A^i.
+\]
+In algebra astratta, questa sostituzione è nota come \emph{valutazione}.
+Si può dimostrare che la valutazione è un omomorfismo di anelli commutativi
+(da $\C[z]$ a $\langle A \rangle$) e che quindi valgono le seguenti identità:
+\[
+(p+q)(A) = p(A) + q(A),
+\quad (pq)(A) = p(A)q(A).
+\]
+\end{defi}
+
+\begin{teor}[Hamilton-Cayley]
+Sia $A$ una matrice quadrata su $\C$ di dimensione~$\bar{m}\times\bar{m}$
+e sia $p(z)$ il suo polinomio caratteristico. Allora $p(A) = 0$.
+\end{teor}
+
+Per arrivare a definire $f(A)$ nel caso generale è necessario introdurre
+il \emph{polinomio minimo} di~$A$ e i \emph{polinomi interpolanti di Hermite}
+per i valori di $f$ sullo spettro di $A$:
+
+\begin{defi}[Polinomio minimo]
+Sia $A$ una matrice quadrata su $\C$ di dimensione~$\bar{m}\times\bar{m}$.
+Si dice \emph{polinomio minimo} di $A$ il polinomio monico di grado
+minimo tra tutti i polinomi $p(z)$ tali che $p(A) = 0$.
+Osserviamo che per definizione il polinomio nullo è escluso perché
+non è monico.
+\end{defi}
+
+\noindent Il teorema di Hamilton-Cayley e la divisione euclidea tra polinomi
+permettono di dimostrare che il polinomio minimo di una matrice $A$
+esiste sempre, è unico e divide ogni altro polinomio che annulla $A$
+(in particolare, il suo polinomio caratteristico).
+
+Per tutto il resto del capitolo, indichiamo con $A$ una generica matrice
+quadrata su $\C$ di dimensione~$\bar{m}\times\bar{m}$, con $p(z)$
+il suo polinomio caratteristico e con $\psi(z)$ il suo polinomio minimo.
+Inoltre, indichiamo con $\lambda_1,\dots,\lambda_\nu$ gli autovalori
+distinti di $A$, ciascuno con molteplicità algebrica
+$\bar{m}_1,\dots,\bar{m}_\nu$.
+Il polinomio caratteristico ha dunque la seguente fattorizzazione:
+\[
+p(z) = \prod_{i=1}^{\nu} (z-\lambda_i)^{\bar{m}_i}
+\qquad \bar{m}_1 + \dots + \bar{m}_\nu = \bar{m}
+\]
+
+\begin{teor}
+Ogni radice di $p(z)$ è una radice di $\psi(z)$, e viceversa.
+Dunque esistono molteplicità algebriche $m_1,\dots,m_\nu$ tali che
+\[
+\psi(z) = \prod_{i=1}^{\nu} (z-\lambda_i)^{m_i},
+\quad \text{con } 1 \leq m_i \leq \bar{m}_i \text{ per ogni $i = 1,\dots,\nu$.}
+\]
+\end{teor}
+
+\noindent Le molteplicità $m_i$ svolgono un ruolo cruciale nella teoria
+delle funzioni di matrice, mentre le molteplicità $\bar{m}_i$
+sono meno importanti. Il motivo è dato dal seguente teorema:
+
+\begin{teor} \label{teor:caratterizzazione-polinomi-di-matrice-uguali}
+Siano $f,g$ due polinomi. Allora $f(A) = g(A)$ se e solo se
+$f$ e $g$ \emph{assumono lo stesso valore sullo spettro di $A$}, ossia
+\begin{equation} \label{eq:stesso-valore-sullo-spettro}
+f^{(j-1)}(\lambda_i) = g^{(j-1)}(\lambda_i)
+\quad \text{per ogni $\,i = 1,\dots,\nu$, $\,j = 1,\dots,m_i$.}
+\end{equation}
+\end{teor}
+
+\noindent È proprio alla luce di questo teorema che hanno senso
+le seguenti definizioni:
+
+\begin{defi}
+Una funzione di variabile complessa $f \colon \C \to \C$
+si dice \emph{definita sullo spettro di $A$} se,
+per ogni $i = 1,\dots,\nu$, $f$ è derivabile con continuità
+almeno $m_i-1$ volte in un intorno di $\lambda_i$.
+\end{defi}
+
+\begin{defi}[Funzione di matrice]
+Sia $f \colon \C \to \C$ una funzione definita sullo spettro di $A$
+e sia $g$ un qualunque polinomio che assume lo stesso valore di $f$
+sullo spettro di $A$ (nel senso dell'equazione \eqref{eq:stesso-valore-sullo-spettro}).
+Allora la \emph{funzione di matrice} $f(A)$ è per definizione uguale a $g(A)$.
+\end{defi}
+
+\noindent Osserviamo che questa definizione è ben posta, perché la scelta
+del particolare polinomio $g$ non cambia il valore di $g(A)$ in base al
+Teorema \ref{teor:caratterizzazione-polinomi-di-matrice-uguali}.
+Inoltre, lo stesso teorema mostra chiaramente come questa definizione
+sia una generalizzazione di quella già data per funzioni polinomiali.
+Rimane solo da capire se esista sempre un polinomio $g$ che assume lo stesso
+valore di $f$ sullo spettro di $A$, detto \emph{polinomio interpolante di $f$
+sullo spettro di $A$}:
+
+\begin{teor}[Interpolazione di Hermite]
+Esiste ed è unica una base dello spazio $\Pi_{m-1}$ costituita da $m$ polinomi
+$\Phi_{ij}(z)$ indicizzati da $i = 1,\dots,\nu$, $\,j = 1,\dots,m_i$ tali che
+\[
+\Phi_{ij}^{(\ell-1)}(\lambda_k) = \delta_{ik} \delta_{j\ell}
+\quad \text{per ogni $\,k = 1,\dots,\nu$, $\,\ell = 1,\dots,m_k$.}
+\]
+\end{teor}
+
+\noindent Il polinomio $g$ nella definizione di $f(A)$ può quindi essere scelto come
+\[
+g(z) = \sum_{i=1}^\nu \sum_{j=1}^{m_i} f^{(j-1)}(\lambda_i) \Phi_{ij}(z).
+\]
+In questo modo otteniamo una formula esplicita per $f(A)$:
+\begin{equation} \label{eq:formula-funzione-di-matrice}
+f(A) = \sum_{i=1}^\nu \sum_{j=1}^{m_i} f^{(j-1)}(\lambda_i) \Phi_{ij}(A).
+\end{equation}
+Le matrici $Z_{ij} \deq \Phi_{ij}(A)$ sono dette \emph{matrici componenti} e
+dipendono unicamente da $A$. Le matrici componenti godono di molte proprietà
+interessanti (in gran parte ereditate da $\Phi_{ij}$):
+
+\begin{teor}
+Siano $Z_{ij}$ le matrici componenti di $A$. Allora
+\begin{itemize}
+\item Le matrici $Z_{ij}$ sono linearmente indipendenti.
+\item $Z_{ij}Z_{k\ell}=0$ se $i \neq k$, a prescindere da $j$ e $\ell$.
+\item $Z_{i1}Z_{ij} = Z_{ij}$ per ogni $\,i = 1,\dots,\nu$, $\,j = 1,\dots,m_i$.
+\item $Z_{i2}Z_{ij} = jZ_{ij+1}$ per ogni $\,i = 1,\dots,\nu$, $\,j = 1,\dots,m_i$.
+\item La matrice $Z_{i2}$ è nilpotente, con indice di nilpotenza $m_i$.
+\end{itemize}
+\end{teor}
+
+\noindent La formula \eqref{eq:formula-funzione-di-matrice}
+permette di dimostrare i seguenti risultati:
+
+\begin{teor} \label{teor:funzione-di-matrice-diagonalizzabile}
+Siano $A,B$ due matrici simili, ossia tali che $A = MBM^{-1}$ per qualche
+$M \in \C^{\bar{m}\times\bar{m}}$ invertibile. Allora $f(A) = Mf(B)M^{-1}$.
+In particolare, se $A$ è diagonalizzabile, ossia se esiste una matrice $D$ diagonale
+tale che $A = MDM^{-1}$, allora $f(A) = Mf(D)M^{-1}$.
+La matrice $f(D)$ può essere calcolata semplicemente applicando $f(z)$
+a ogni elemento sulla diagonale di $D$.
+\end{teor}
+
+\begin{teor} \label{teor:funzione-di-matrice-derivata}
+Sia $U$ un intorno dello spettro di $A$ e sia $f(z,t) \colon U \times \R \to \C$
+una funzione di regolarità $C^\infty(U \times \R)$. Allora
+\[
+\frac{d}{dt} f(A,t) = \left( \frac{\partial f}{\partial t} \right) \! (A,t).
+\]
+\end{teor}
+
+\begin{proof}
+Basta scambiare l'ordine della derivata rispetto a $t$ con le $j-1$ derivate rispetto
+a $z$ in ogni termine della formula \eqref{eq:formula-funzione-di-matrice}.
+\end{proof}
+
+Concludiamo questo paragrafo con due lemmi relativi alla stabilità asintotica
+delle matrici $e^{At}$ per $t \to \infty$ e $A^n$ per $n \to \infty$.
+
+\begin{defi}
+Un autovalore $\lambda_i$ si dice \emph{semplice} se $\bar{m}_i = 1$,
+altrimenti \emph{degenere}. Se $m_i = 1$, l'autovalore si dice \emph{semisemplice}.
+\end{defi}
+
+\begin{teor} \label{teor:andamento-asintotico-esponenziale-matrice}
+In base allo spettro di $A$, la matrice $e^{tA}$ può avere tre possibili
+andamenti asintotici per $t \to \infty$:
+\begin{itemize}
+\item $\norm{e^{tA}} \to 0$ se e solo se $\Re(\lambda_i) < 0$ per ogni
+	$i = 1,\dots,\nu$.
+\item $\norm{e^{tA}}$ è limitata se e solo se $\Re(\lambda_i) \leq 0$ per ogni
+	$i = 1,\dots,\nu$ e in più ogni autovalore puramente immaginario è semisemplice.
+\item $\norm{e^{tA}} \to \infty$ altrimenti.
+\end{itemize}
+\end{teor}
+
+\begin{proof}
+La formula \eqref{eq:formula-funzione-di-matrice} applicata alla funzione
+$f(z) = e^{tz}$ ci dice che
+\[
+e^{tA} = \sum_{i=1}^\nu \sum_{j=1}^{m_i} t^{\,j-1} e^{t \lambda_i} Z_{ij}.
+\]
+La tesi segue andando a studiare l'andamento asintotico di ogni addendo.
+Il fatto che ogni addendo converga a zero o sia limitato ovviamente implica
+che l'intera somma converga a zero o sia limitata. Se anche solo un addendo
+non è limitato, supponiamo relativo a $\lambda_k$, allora possiamo moltiplicare
+l'identità precedente per $Z_{k1}$ e ricavare la disuguaglianza
+\[
+\norm{\sum_{j=1}^{m_k} t^{\,j-1} e^{t \lambda_k} Z_{kj}}
+= \norm{Z_{k1}e^{tA}}
+\leq \norm{Z_{k1}} \norm{e^{tA}}
+\]
+dalla quale segue che l'intera somma è divergente.
+\end{proof}
+
+\begin{teor} \label{teor:andamento-asintotico-potenza-matrice}
+In base allo spettro di $A$, la matrice $A^n$ può avere tre possibili
+andamenti asintotici per $n \to \infty$:
+\begin{itemize}
+\item $\norm{A^n} \to 0$ se e solo se $\abs{\lambda_i} < 1$ per ogni
+	$i = 1,\dots,\nu$.
+\item $\norm{A^n}$ è limitata se e solo se $\abs{\lambda_i} \leq 1$ per ogni
+	$i = 1,\dots,\nu$ e in più ogni autovalore sulla circonferenza unitaria è semisemplice.
+\item $\norm{A^n} \to \infty$ altrimenti.
+\end{itemize}
+\end{teor}
+
+\begin{proof}
+Come la dimostrazione precedente, solo che stavolta la formula
+\eqref{eq:formula-funzione-di-matrice} viene applicata alla funzione $f(z) = z^n$.
+\end{proof}
+
+\section{Aspetti computazionali}
+
+La formula \eqref{eq:formula-funzione-di-matrice}, pur essendo pienamente
+soddisfacente da un punto di vista teorico, non fornisce un metodo
+efficace per il calcolo di $f(A)$ da un punto di vista computazionale.
+I problemi sono sostanzialmente due. In primo luogo, il calcolo delle
+matrici componenti $Z_{ij}$ richiede $O(\bar{m}^4)$ operazioni,
+mentre il Teorema~\ref{teor:funzione-di-matrice-diagonalizzabile}
+ci dice che se $A$ è diagonalizzabile possiamo calcolare $f(A)$
+con $O(\bar{m}^3)$ operazioni (per esempio, tramite la funzione \code{eig} di MATLAB).
+Dato che le matrici diagonalizzabili sono dense in $\C^{\bar{m}\times\bar{m}}$,
+si capisce che il costo computazionale \emph{tipico} per $f(A)$ dovrebbe
+essere dell'ordine di $\bar{m}^3$, non $\bar{m}^4$.
+In secondo luogo, la formula \eqref{eq:formula-funzione-di-matrice}
+dipende in modo cruciale dalla capacità di determinare in modo esatto
+le proprietà spettrali di $A$, tra cui il numero di autovalori distinti
+e le relative molteplicità algebriche. Tale problema è intrinsecamente
+mal condizionato e quindi intrattabile mediante l'uso di numeri di macchina
+(è sostanzialmente lo stesso probema che s'incontra cercando di calcolare
+la forma normale di Jordan, per esempio).
+
+Appurato che la formula \eqref{eq:formula-funzione-di-matrice} è inadeguata,
+non è comunque facile trovare algoritmi stabili ed efficienti per il calcolo
+di $f(A)$. Persino nel caso favorevole in cui $A$ sia diagonalizzabile,
+la valutazione di $M f(D) M^{-1}$ porta ad amplificare l'errore relativo
+su $f(D)$ (che nel migliore dei casi sarà dell'ordine dell'epsilon di macchina)
+di un fattore $\lVert M \rVert \lVert M^{-1} \rVert$.
+Dato che il numero di condizionamento del problema % del calcolo di $f(A)$
+può essere di molto inferiore al numero di condizionamento della matrice $M$,
+anche questo algoritmo per certi versi ideale può risultare instabile.
+
+In questo elaborato ci limiteremo al caso ancor più favorevole in cui $A$
+è un matrice \emph{normale}, cioè una matrice che commuta con la propria
+trasposta coniugata $A^\star$.
+I seguenti risultati permettono di dimostrare che il problema del
+calcolo di $f(A)$ è ben condizionato per questa classe di matrici:
+
+\begin{teor}[Decomposizione di Schur]
+Sia $A$ una matrice a coefficienti in $\C$. Allora esistono una matrice
+unitaria $Q$ e una matrice triangolare superiore $T$ tali che
+\[
+A = Q T Q^\star.
+\]
+\end{teor}
+
+\begin{teor}
+Una matrice $A$ è normale se e solo se è diagonalizzabile per mezzo
+di una matrice unitaria.
+\end{teor}
+
+\begin{proof}
+Supponiamo che $A$ sia normale, e sia $QTQ^\star$ la sua decomposizione di Schur.
+Allora anche la matrice $T = Q^\star A Q$ è normale:
+\[
+T^\star T
+= (Q^\star A^\star Q) (Q^\star A Q)
+= Q^\star A^\star A Q
+= Q^\star A A^\star Q
+= (Q^\star A Q) (Q^\star A^\star Q)
+= T T^\star
+\]
+Indichiamo con $e_i$ l'$i$-esimo elemento della base canonica di $\C^{\bar{m}}$
+e con $\langle\cdot,\cdot\rangle$ il prodotto hermitiano standard.
+Allora si ha che
+\[
+\norm{Te_i}
+= \langle T e_i, T e_i \rangle
+= \langle T^\star T e_i, e_i \rangle
+= \langle T T^\star e_i, e_i \rangle
+= \langle T^\star e_i, T^\star e_i \rangle
+= \norm{T^\star e_i},
+\]
+cioè la norma della colonna $i$-esima di $T$ è uguale alla norma della
+riga $i$-esima. Ma dato che $T$ è triangolare questo permette di dimostrare
+con un ragionamento induttivo che tutti gli elementi di $T$ al di fuori della
+diagonale sono nulli, come richiesto.
+
+Viceversa, se $A = Q D Q^\star$ con $Q$ unitaria e $D$ diagonale si verifica
+facilmente che $A^\star A = A A^\star$ (basta sfruttare il fatto che
+$D$ sia normale, in quanto diagonale).
+\end{proof}
+
+Dato che le matrici unitarie hanno numero di condizionamento 1,
+il teorema precedente ci dice che la funzione di una matrice normale
+non solo può essere calcolata tramite diagonalizzazione, ma anche
+che questa tecnica risulta stabile:
+l'errore su $f(D)$ non viene amplificato dall'operazione di cambio di base.
+Questo approccio è alla base del Programma \ref{prog:funm-normal},
+che fa uso del comando \code{schur} di MATLAB per calcolare in modo
+stabile la decomposizione di Schur della matrice $A$ in ingresso.
+L'unica possibile fonte di instabilità nel Programma \ref{prog:funm-normal}
+è data dalla valutazione di $f$ sullo spettro di $A$,
+ma questo è inevitabile perché si può dimostrare che il
+numero di condizionamento del problema è legato proprio al numero
+di condizionamento di $f$ sullo spettro di $A$
+(basti pensare al caso in cui $A$ è già diagonale).
+
+\lstinputlisting[float=tp,label=prog:funm-normal,
+caption={Calcolo della funzione di una matrice normale.}]{funm_normal.m}
+
+Concludiamo questo capitolo con due osservazioni.
+La prima è che l'ipotesi di normalità, pur essendo molto forte,
+è soddisfatta in pratica da classi molto importanti di matrici, quali
+le matrici hermitiane, antihermitiane e unitarie (rispettivamente
+simmetriche, antisimmetriche e ortogonali, nel caso reale).
+La seconda è che, anche nel caso in cui $A$ non sia normale,
+conviene lo stesso ricondursi in modo stabile al calcolo di $f(T)$ con
+$T$ triangolare tramite decomposizione di Schur.
+Questo è infatti il punto di partenza degli algoritmi di tipo
+\emph{Schur-Parlett}, che sono a oggi lo stato dell'arte per
+il calcolo di funzioni di matrice nel caso generale (cioè senza
+particolari ipotesi su $f$ o su $A$).
+Il comando \code{funm} di MATLAB utilizza proprio un algoritmo
+di questo tipo, dovuto a Davies e Higham.%
+\footnote{Davies, P.\ I.\ and Higham, N.\ J.
+\emph{A Schur-Parlett algorithm for computing matrix functions},
+SIAM J.\ Matrix Anal.\ Appl., Vol.\ 25, Number 2, pp.\ 464-485, 2003.}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,41 @@
+\BOOKMARK [0][-]{chapter.1}{Introduzione}{}% 1
+\BOOKMARK [1][-]{section.1.1}{Analisi dell'errore}{chapter.1}% 2
+\BOOKMARK [1][-]{section.1.2}{Standard IEEE 754 per il calcolo in virgola mobile}{chapter.1}% 3
+\BOOKMARK [1][-]{section.1.3}{Numeri di Stirling di seconda specie}{chapter.1}% 4
+\BOOKMARK [0][-]{chapter.2}{Equazioni alle differenze}{}% 5
+\BOOKMARK [1][-]{section.2.1}{Ricorrenza di Fibonacci e instabilit\340 numerica}{chapter.2}% 6
+\BOOKMARK [1][-]{section.2.2}{Metodo delle secanti}{chapter.2}% 7
+\BOOKMARK [1][-]{section.2.3}{Stabilit\340 e criteri di Schur}{chapter.2}% 8
+\BOOKMARK [1][-]{section.2.4}{Modello del cobweb}{chapter.2}% 9
+\BOOKMARK [1][-]{section.2.5}{Modello di economia di una nazione}{chapter.2}% 10
+\BOOKMARK [0][-]{chapter.3}{Metodi lineari multistep}{}% 11
+\BOOKMARK [1][-]{section.3.1}{Propriet\340 quantitative}{chapter.3}% 12
+\BOOKMARK [1][-]{section.3.2}{Zero-stabilit\340}{chapter.3}% 13
+\BOOKMARK [1][-]{section.3.3}{Assoluta stabilit\340}{chapter.3}% 14
+\BOOKMARK [1][-]{section.3.4}{Aspetti computazionali}{chapter.3}% 15
+\BOOKMARK [1][-]{section.3.5}{Metodi di Adams}{chapter.3}% 16
+\BOOKMARK [1][-]{section.3.6}{Formule di Newton-Cotes}{chapter.3}% 17
+\BOOKMARK [1][-]{section.3.7}{Backward Differentiation Formulae}{chapter.3}% 18
+\BOOKMARK [0][-]{chapter.4}{Funzioni di matrici}{}% 19
+\BOOKMARK [1][-]{section.4.1}{Aspetti computazionali}{chapter.4}% 20
+\BOOKMARK [0][-]{chapter.5}{Sistemi lineari di equazioni}{}% 21
+\BOOKMARK [1][-]{section.5.1}{Sistemi di equazioni differenziali}{chapter.5}% 22
+\BOOKMARK [1][-]{section.5.2}{Sistemi di equazioni alle differenze}{chapter.5}% 23
+\BOOKMARK [1][-]{section.5.3}{Sistemi dinamici positivi}{chapter.5}% 24
+\BOOKMARK [1][-]{section.5.4}{Modello di Leslie}{chapter.5}% 25
+\BOOKMARK [1][-]{section.5.5}{Algoritmo PageRank}{chapter.5}% 26
+\BOOKMARK [1][-]{section.5.6}{Modello di corsa agli armamenti}{chapter.5}% 27
+\BOOKMARK [0][-]{chapter.6}{Sistemi nonlineari di equazioni}{}% 28
+\BOOKMARK [1][-]{section.6.1}{Sistemi nonlineari continui}{chapter.6}% 29
+\BOOKMARK [1][-]{section.6.2}{Sistemi nonlineari discreti}{chapter.6}% 30
+\BOOKMARK [1][-]{section.6.3}{Modello per la diagnosi del diabete mellito}{chapter.6}% 31
+\BOOKMARK [1][-]{section.6.4}{Problemi stiff e rapporto di stiffness}{chapter.6}% 32
+\BOOKMARK [0][-]{chapter.7}{Dai punti di equilibrio agli strani attrattori}{}% 33
+\BOOKMARK [1][-]{section.7.1}{Modello preda-predatore}{chapter.7}% 34
+\BOOKMARK [1][-]{section.7.2}{Equazioni di Lorenz}{chapter.7}% 35
+\BOOKMARK [1][-]{section.7.3}{Equazione logistica}{chapter.7}% 36
+\BOOKMARK [0][-]{chapter.8}{Metodi Runge-Kutta}{}% 37
+\BOOKMARK [1][-]{section.8.1}{Propriet\340 dei metodi Runge-Kutta}{chapter.8}% 38
+\BOOKMARK [1][-]{section.8.2}{Regione di assoluta stabilit\340 del metodo RK classico}{chapter.8}% 39
+\BOOKMARK [1][-]{section.8.3}{Hamiltonian Boundary Value Methods}{chapter.8}% 40
+\BOOKMARK [1][-]{section.8.4}{Problemi hamiltoniani}{chapter.8}% 41

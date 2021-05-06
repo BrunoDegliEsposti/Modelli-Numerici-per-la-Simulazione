@@ -1,0 +1,43 @@
+\babel@toc {italian}{}
+\babel@toc {italian}{}
+\contentsline {chapter}{\numberline {1}Introduzione}{3}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Analisi dell'errore}{3}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Standard IEEE 754 per il calcolo in virgola mobile}{4}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Numeri di Stirling di seconda specie}{6}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Equazioni alle differenze}{9}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Ricorrenza di Fibonacci e instabilità numerica}{10}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Metodo delle secanti}{12}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Stabilità e criteri di Schur}{18}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Modello del cobweb}{25}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Modello di economia di una nazione}{27}{section.2.5}%
+\contentsline {chapter}{\numberline {3}Metodi lineari multistep}{29}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Proprietà quantitative}{30}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Zero-stabilità}{33}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Assoluta stabilità}{34}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Aspetti computazionali}{37}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Metodi di Adams}{42}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Formule di Newton-Cotes}{45}{section.3.6}%
+\contentsline {section}{\numberline {3.7}Backward Differentiation Formulae}{48}{section.3.7}%
+\contentsline {chapter}{\numberline {4}Funzioni di matrici}{51}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Aspetti computazionali}{54}{section.4.1}%
+\contentsline {chapter}{\numberline {5}Sistemi lineari di equazioni}{56}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Sistemi di equazioni differenziali}{56}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Sistemi di equazioni alle differenze}{57}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Sistemi dinamici positivi}{58}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Modello di Leslie}{60}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Algoritmo PageRank}{65}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Modello di corsa agli armamenti}{67}{section.5.6}%
+\contentsline {chapter}{\numberline {6}Sistemi nonlineari di equazioni}{71}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Sistemi nonlineari continui}{71}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Sistemi nonlineari discreti}{73}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Modello per la diagnosi del diabete mellito}{74}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Problemi stiff e rapporto di stiffness}{76}{section.6.4}%
+\contentsline {chapter}{\numberline {7}Dai punti di equilibrio agli strani attrattori}{82}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Modello preda-predatore}{82}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Equazioni di Lorenz}{84}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Equazione logistica}{88}{section.7.3}%
+\contentsline {chapter}{\numberline {8}Metodi Runge-Kutta}{93}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Proprietà dei metodi Runge-Kutta}{98}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Regione di assoluta stabilità del metodo RK classico}{99}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Hamiltonian Boundary Value Methods}{101}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Problemi hamiltoniani}{102}{section.8.4}%
